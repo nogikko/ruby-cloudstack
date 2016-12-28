@@ -60,7 +60,7 @@ class CloudStack < BaseCloudStack
   # Iso
   #
 
-  def o(*params)
+  def deleteIso(*params)
     return get_job_result(super)
   end
 
@@ -89,12 +89,12 @@ class CloudStack < BaseCloudStack
 
   def get_job_result(response)
     if response.has_key?('jobid')
-      jobstatus, message = polling_asyncjob(response['jobid']);
+      job_result = polling_asyncjob(response['jobid']);
 
-      return jobstatus, message
+      return job_result
     end
 
-    return "error", response['errortext']
+    return response['errortext']
 
   end
 
@@ -113,14 +113,7 @@ class CloudStack < BaseCloudStack
 
     end while result['jobstatus'] == 0
 
-    case result['jobstatus']
-      when 1 then
-        return 1, 'success'
-      when 2 then
-        return 2, result
-      else
-        return
-    end
+    return result
 
   end
 

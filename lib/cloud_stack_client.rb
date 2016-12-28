@@ -51,22 +51,22 @@ class CloudStackClient < CloudStack
   # VirtualMachine
   #
   def liveMigrateVM(vmid, hostid)
-    status, message = migrateVirtualMachine(virtualmachineid: vmid, hostid: hostid)
-    return status, message
+    message = migrateVirtualMachine(virtualmachineid: vmid, hostid: hostid)
+    return message
   end
 
   def coldMigrateVM(vmid, hostid)
-    stop_status, message = stopVirtualMachine(id: vmid)
-    puts stop_status
-    if (stop_status == 1)
-      start_status, message = startVirtualMachine(id: vmid, hostid: hostid)
-      if (start_status == 1)
-        return "コールドマイグレ成功", message
+    stop_result = stopVirtualMachine(id: vmid)
+    if (stop_result['jobstatus'] == 1)
+      start_result = startVirtualMachine(id: vmid, hostid: hostid)
+      if (start_result['jobstatus'] == 1)
+        return {'status' => 'success','message' => 'コールド成功','result' => start_result}
+
       else
-        return "起動失敗", message
+        return {'status' => 'fail','message' => '起動失敗','result' => start_result}
       end
     else
-      return "停止失敗", message
+      return {'status' => 'fail','message'=>'停止失敗','result' => stop_result }
     end
   end
 
@@ -142,8 +142,8 @@ class CloudStackClient < CloudStack
   # SystemVM
   #
   def liveMigrateSVM(vmid, hostid)
-    status, message = migrateSystemVm(virtualmachineid: vmid, hostid: hostid)
-    return status, message
+    message = migrateSystemVm(virtualmachineid: vmid, hostid: hostid)
+    return  message
   end
 
 
